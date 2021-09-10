@@ -56,8 +56,13 @@ int main(int argc, char **argv){
     SDL_CreateWalls(window, renderer, 10, map);
     SDL_RenderPresent(renderer);
     status = EXIT_SUCCESS;
-    SDL_Delay(5000);
-    Quit:
+    Quit: ;
+        SDL_Event event;
+        SDL_bool quit = SDL_FALSE;
+        while (!quit){
+            SDL_WaitEvent(&event);
+            if (event.type == SDL_QUIT) quit = SDL_TRUE;
+        }
         SDL_DestroyWindow(window);
         SDL_DestroyRenderer(renderer);
         SDL_Quit();
