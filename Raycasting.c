@@ -81,6 +81,13 @@ int main(int argc, char **argv){
                     rect.y += 25;
                 }
             }
+            else if (event.type == SDL_MOUSEBUTTONDOWN){
+                if (event.button.state & SDL_BUTTON_LEFT){
+                    SDL_Rect mouseRect = {event.button.x-12, event.button.y-12, 25, 25};
+                    SDL_RenderFillRect(renderer, &mouseRect);
+                    SDL_RenderPresent(renderer);
+                }
+            }
         }
         SDL_DestroyWindow(window);
         SDL_DestroyRenderer(renderer);
