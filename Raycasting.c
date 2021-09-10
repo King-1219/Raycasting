@@ -59,17 +59,16 @@ int main(int argc, char **argv){
     Quit: ;
         SDL_Event event;
         SDL_bool quit = SDL_FALSE;
-        SDL_Point start = {225, 225};
+        SDL_Rect rect = {225, 225, 50, 50};
         while (!quit){
             SDL_WaitEvent(&event);
             if (event.type == SDL_QUIT) quit = SDL_TRUE;
             else if (event.type == SDL_KEYDOWN){
                 if (event.key.keysym.sym == SDLK_UP){
-                    SDL_Rect rect = {start.x, start.y, 50, 50};
                     SDL_RenderDrawRect(renderer, &rect);
                     SDL_RenderPresent(renderer);
-                    start.x += 50;
-                    start.y += 50;
+                    rect.x += 50;
+                    rect.y += 50;
                 }
             }
         }
