@@ -29,18 +29,41 @@ int main(int argc, char **argv){
         goto Quit;
     }
     SDL_SetWindowTitle(window, "SDL2 Rotating Square");
-    SDL_Point point2 = {250, 250};
+    SDL_Point point2 = {225, 225};
     SDL_Event event;
     SDL_bool quit = SDL_FALSE;
-    double angle = 0.0;
+    int length = 50;
     while (!quit){
         SDL_PollEvent(&event);
         if (event.type == SDL_QUIT) quit = SDL_TRUE;
         SDL_SetRenderDrawColor(renderer, red.r, red.g, red.b, red.a);
-        SDL_CreateSquare(renderer, point2, 50, angle);
+        SDL_CreateSquare(renderer, point2, length, 0);
+        if (event.type == SDL_KEYDOWN){
+            switch (event.key.keysym.sym){
+                case SDLK_UP:
+                    point2.x--;
+                    point2.y--;
+                    length += 2;
+                    break;
+                case SDLK_DOWN:
+                    point2.x++;
+                    point2.y++;
+                    length -= 2;
+                    break;
+                case SDLK_RIGHT:
+                    point2.x++;
+                    break;
+                case SDLK_LEFT:
+                    point2.x--;
+                    break;
+            }
+        }
+        if (length < 0){
+            length = 0;
+        }
         SDL_RenderPresent(renderer);
-        angle += 0.01;
-        SDL_Delay(5);
+        
+        SDL_Delay(10);
         SDL_SetRenderDrawColor(renderer, black.r, black.g, black.b, black.a);
         SDL_RenderClear(renderer);
     }
