@@ -30,23 +30,24 @@ SDL_Texture* SDL_CreateTextureFromImage(char *path, SDL_Renderer *renderer){
     return texture;
 }
 
-void SDL_RenderDrawWall(SDL_Renderer *renderer, int x, int y){
-    SDL_Texture *texture = SDL_CreateTextureFromImage("Raycasting/images/Walls.bmp", renderer);
+void SDL_RenderDrawTexture(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y){
     SDL_Rect dst = {x, y, 0, 0};
     SDL_QueryTexture(texture, NULL, NULL, &dst.w, &dst.h);
     SDL_RenderCopy(renderer, texture, NULL, &dst);
 }
 
-void SDL_RenderDrawMap(SDL_Renderer *renderer, int size, int map[size][size]){
+void SDL_RenderDrawMap(SDL_Renderer *renderer, SDL_Texture *texture, int size, int map[size][size]){
     SDL_Point start = {0, 0};
+    int dx = 0, dy = 0;
+    SDL_QueryTexture(texture, NULL, NULL, &dx, &dy);
     for(int i=0; i<size; i++){
         for(int j=0; j<size; j++){
             if (map[i][j] == 1){
-                SDL_RenderDrawWall(renderer, start.x, start.y);
+                SDL_RenderDrawTexture(renderer, texture, start.x, start.y);
             }
-            start.x += 34;
+            start.x += dx;
         }
-        start.y += 34;
+        start.y += dy;
         start.x = 0;
     }
 }
@@ -70,7 +71,7 @@ int main(int argc, char **argv){
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
     int status = EXIT_FAILURE;
-    SDL_Color white = {255, 255, 255, 255};
+    SDL_Color black = {0, 0, 0, 255};
     if (SDL_Init(SDL_INIT_VIDEO) != 0){
         fprintf(stderr, "Error in SDL_Init : %s\n", SDL_GetError());
         goto Quit;
@@ -82,15 +83,45 @@ int main(int argc, char **argv){
         goto Quit;
     }
     SDL_SetWindowTitle(window, "Game in SDL2");
-    SDL_SetRenderDrawColor(renderer, white.r, white.g, white.b, white.a);
+    SDL_SetRenderDrawColor(renderer, black.r, black.g, black.b, black.a);
     SDL_RenderClear(renderer);
-    SDL_RenderDrawMap(renderer, 15, map);
-    SDL_RenderPresent(renderer);
+    SDL_Texture *texture = SDL_CreateTextureFromImage("Raycasting/images/Walls.bmp", renderer);
+    SDL_RenderDrawMap(renderer, texture, 15, map);
+    SDL_Texture *marioDown = SDL_CreateTextureFromImage("Raycasting/images/mario_down.bmp", renderer);
+    SDL_Texture *marioLeft = SDL_CreateTextureFromImage("Raycasting/images/mario_left.bmp", renderer);
+    SDL_Texture *marioUp = SDL_CreateTextureFromImage("Raycasting/images/mario_up.bmp", renderer);
+    SDL_Texture *marioRight = SDL_CreateTextureFromImage("Raycasting/images/mario_right.bmp", renderer);
     SDL_Event event;
     SDL_bool quit = SDL_FALSE;
+    SDL_Point marioPos = {238, 0};
+    SDL_RenderDrawTexture(renderer, marioDown, marioPos.x, marioPos.y);
+    SDL_RenderPresent(renderer);
     while (!quit){
         SDL_PollEvent(&event);
         if (event.type == SDL_QUIT) quit = SDL_TRUE;
+        else if (event.type == SDL_KEYDOWN){
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_UP:
+                marioPos.y--;
+                SDL_RenderDrawTexture(renderer, marioUp, marioPos.x, marioPos.y);
+                break;
+            case SDLK_DOWN:
+                marioPos.y++;
+                SDL_RenderDrawTexture(renderer, marioDown, marioPos.x, marioPos.y);
+                break;
+            case SDLK_LEFT:
+                marioPos.x--;
+                SDL_RenderDrawTexture(renderer, marioLeft, marioPos.x, marioPos.y);
+                break;
+            case SDLK_RIGHT:
+                marioPos.x++;
+                SDL_RenderDrawTexture(renderer, marioRight, marioPos.x, marioPos.y);
+                break;
+            }
+        SDL_RenderPresent(renderer);
+        SDL_Delay(5);
+        }
     }
     status = EXIT_SUCCESS;
     Quit:
