@@ -37,7 +37,38 @@ void SDL_RenderDrawWall(SDL_Renderer *renderer, int x, int y){
     SDL_RenderCopy(renderer, texture, NULL, &dst);
 }
 
+void SDL_RenderDrawMap(SDL_Renderer *renderer, int size, int map[size][size]){
+    SDL_Point start = {0, 0};
+    for(int i=0; i<size; i++){
+        for(int j=0; j<size; j++){
+            if (map[i][j] == 1){
+                SDL_RenderDrawWall(renderer, start.x, start.y);
+            }
+            start.x += 34;
+        }
+        start.y += 34;
+        start.x = 0;
+    }
+}
+
 int main(int argc, char **argv){
+    int map[15][15] = {
+        {1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+    };
     int status = EXIT_FAILURE;
     SDL_Color white = {255, 255, 255, 255};
     if (SDL_Init(SDL_INIT_VIDEO) != 0){
@@ -46,14 +77,14 @@ int main(int argc, char **argv){
     }
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
-    if (SDL_CreateWindowAndRenderer(500, 500, SDL_WINDOW_SHOWN, &window, &renderer) != 0){
+    if (SDL_CreateWindowAndRenderer(510, 510, SDL_WINDOW_SHOWN, &window, &renderer) != 0){
         fprintf(stderr, "Error in SDL_CreateWindowAndRenderer : %s\n", SDL_GetError());
         goto Quit;
     }
     SDL_SetWindowTitle(window, "Game in SDL2");
     SDL_SetRenderDrawColor(renderer, white.r, white.g, white.b, white.a);
     SDL_RenderClear(renderer);
-    SDL_RenderDrawWall(renderer, 0, 0);
+    SDL_RenderDrawMap(renderer, 15, map);
     SDL_RenderPresent(renderer);
     SDL_Event event;
     SDL_bool quit = SDL_FALSE;
